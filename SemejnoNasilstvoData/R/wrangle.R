@@ -1,3 +1,38 @@
+#' Get a translation
+#' @param table the translation lookup table, options are: 'sector', 'article', 'offense',
+#' 'colnames', 'type', 'group', ...
+#' @param lang_in,lang_out from and to language. A 2-letter language code, "mk", "sq", or "en"
+#' @param term the term to translate
+#' @noRd
+get_translation <- function(table, term, lang_in, lang_out) {
+  if (is.na(term)) {
+    return(NA_character_)
+  }
+
+  target_table <- base::get(paste(table, "_tt", sep = ""))
+
+  target <- target_table %>%
+    dplyr::filter(!!rlang::sym(lang_in) == term)
+
+  if (nrow(target) == 0) {
+    return(NA_character_)
+  } else {
+    return(dplyr::pull(target, lang_out))
+  }
+
+}
+
+bulk_translate_from_mk <- function(vec, tab, lang) {
+  purrr::map_chr(vec, function(x)
+    get_translation(
+      table = tab,
+      term = x,
+      lang_in = "mk",
+      lang_out = lang
+    ))
+}
+
+
 #' Wrangle `КД по СВР` (Кривични дела по сектор за внатрешни работи)
 #'
 #' @details This is the first sheet in the quarterly report in excel file
@@ -13,7 +48,6 @@
 #' get_crime_by_sector(path = path, lang = "en")
 #'
 #' @export
-
 get_crime_by_sector <- function(path, lang) {
   X <- readxl::read_excel(path = path,
                           sheet = 1,
@@ -27,223 +61,54 @@ get_crime_by_sector <- function(path, lang) {
     dplyr::mutate(Сектор = stringr::str_to_sentence(stringr::str_remove(Сектор, "СВР "))) %>%
     dplyr::mutate(`Законска инкриминација` = stringr::str_to_sentence(`Законска инкриминација`)) %>%
     dplyr::mutate(`Член од кривичен законик` = stringr::str_to_sentence(`Член од кривичен законик`)) %>%
-    dplyr::mutate(Сектор = sapply(Сектор, USE.NAMES = FALSE, function(x)
-      get_translation(
-        table = "sector",
-        term = x,
-        lang_in = "mk",
-        lang_out = lang
-      ))) %>%
-    dplyr::mutate(`Законска инкриминација` = sapply(`Законска инкриминација`, USE.NAMES = FALSE, function(x)
-      get_translation(
-        table = "offense",
-        term = x,
-        lang_in = "mk",
-        lang_out = lang
-      ))) %>%
-    dplyr::mutate(`Член од кривичен законик` = sapply(`Член од кривичен законик`, USE.NAMES = FALSE, function(x)
-      get_translation(
-        table = "article",
-        term = x,
-        lang_in = "mk",
-        lang_out = lang
-      )))
+    dplyr::mutate(Сектор = bulk_translate_from_mk(vec = Сектор, tab = "sector", lang = lang)) %>%
+    dplyr::mutate(`Законска инкриминација` = bulk_translate_from_mk(vec = `Законска инкриминација`, tab = "offense", lang = lang)) %>%
+    dplyr::mutate(`Член од кривичен законик` = bulk_translate_from_mk(vec = `Член од кривичен законик`, tab = "article", lang = lang))
 
-  new_col_names <-
-    sapply(colnames(Y), USE.NAMES = FALSE, function(x)
-      get_translation(
-        table = "colnames",
-        term = x,
-        lang_in = "mk",
-        lang_out = lang
-      ))
+  new_col_names <- bulk_translate_from_mk(vec = colnames(Y), tab = "colnames", lang = lang)
 
   names(Y) <- new_col_names
 
   return(Y)
 }
 
-#' Get a translation
-#' @param table the lookup table, options are: 'sector', 'article', 'offense', and 'colnames'
-#' @param lang_in,lang_out from and to language. A 2-letter language code, "mk", "sq", or "en"
-#' @param term the term to translate
-#' @noRd
+#' Wrangle `Сторители и жртви на КД по СВР`
+#'
+#' @details This is the second sheet in the quarterly report in excel file
+#' published by the Macedonian Ministry of Internal Affairs
+#'
+#' @param path path (local or url) to the excel file
+#' @param lang A 2-letter language code, "mk", "sq", or "en"
+#'
+#' @examples
+#' path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
+#' get_victims_by_sector(path = path, lang = "sq")
+#' get_victims_by_sector(path = path, lang = "mk")
+#' get_victims_by_sector(path = path, lang = "en")
+#'
+#' @export
+get_victims_by_sector <- function(path, lang) {
+  X <- readxl::read_excel(path = path,
+                          sheet = 2,
+                          range = "A2:AE10")
 
-get_translation <- function(table, term, lang_in, lang_out) {
+  colnames(X)[[1]] <- "Сектор"
 
-  target_table <- switch(table,
-                         "sector" = svr_translation_table(),
-                         "article" = article_translation_table(),
-                         "offense" = offense_translation_table(),
-                         "colnames" = colnames_translation_table()
-  )
+  Y <- X %>% tidyr::pivot_longer(cols = -1, names_to = "Група", values_to = "Број") %>%
+    dplyr::mutate(Сектор = stringr::str_to_sentence(stringr::str_remove(Сектор, "СВР "))) %>%
+    dplyr::mutate(Група = stringr::str_to_sentence(Група)) %>%
+    tidyr::separate(Група, into = c("Тип", "Група"), sep = " - ", fill = "right") %>%
+    # again different content, same column name
+    dplyr::mutate(Група = stringr::str_to_sentence(Група)) %>%
+    dplyr::mutate(Група = tidyr::replace_na(data = Група, replace = "NA")) %>%
+    dplyr::mutate(Сектор = bulk_translate_from_mk(vec = Сектор, tab = "sector", lang = lang)) %>%
+    dplyr::mutate(Тип = bulk_translate_from_mk(vec = Тип, tab = "type", lang = lang)) %>%
+    dplyr::mutate(Група = bulk_translate_from_mk(vec = Група, tab = "group", lang = lang))
 
-  target_table %>%
-    dplyr::filter(!!rlang::sym(lang_in) == term) %>%
-    dplyr::pull(lang_out)
+  new_col_names <- bulk_translate_from_mk(vec = colnames(Y), tab = "colnames", lang = lang)
+
+  names(Y) <- new_col_names
+
+  return(Y)
 }
 
-#' @noRd
-svr_translation_table <- function() {
-  mk <-
-    stringr::str_to_sentence(
-      c(
-        "Вкупно",
-        "СКОПЈЕ",
-        "БИТОЛА",
-        "ВЕЛЕС",
-        "КУМАНОВО",
-        "ОХРИД",
-        "СТРУМИЦА",
-        "ТЕТОВО",
-        "ШТИП"
-      )
-    )
-  en <-
-    stringr::str_to_sentence(
-      c(
-        "Total",
-        "Skopje",
-        "Bitola",
-        "Veles",
-        "Kumanovo",
-        "Ohrid",
-        "Strumica",
-        "Tetovo",
-        "Stip"
-      )
-    )
-  sq <-
-    stringr::str_to_sentence(
-      c(
-        "Total",
-        "Shkup",
-        "Manastir",
-        "Veles",
-        "Kumanovë",
-        "Ohër",
-        "Strumica",
-        "Tetova",
-        "Shtip"
-      )
-    )
-  data.frame(mk, sq, en)
-}
-
-#' @noRd
-article_translation_table <- function(lang) {
-  mk <-
-    stringr::str_to_sentence(
-      c(
-        "Член 123 став 2",
-        "Член 123 став 2 во врска со член 19",
-        "Член 130 став 2",
-        "Член 131 став 2",
-        "Член 139 став 2",
-        "Член 144 став 2",
-        "Член 140 став 2",
-        "Член 189 став 2",
-        "Член 191 став 3"
-      )
-    )
-
-  sq <-
-    stringr::str_to_sentence(
-      c(
-        "neni 123 paragrafi 2",
-        "neni 123 paragrafi 2 në lidhje me nenin 19",
-        "Neni 130 paragrafi 2",
-        "neni 131 paragrafi 2",
-        "neni 139 paragrafi 2",
-        "Neni 144 paragrafi 2",
-        "neni 140 paragrafi 2",
-        "neni 189 paragrafi 2",
-        "Neni 191 paragrafi 3"
-      )
-    )
-
-  en <- stringr::str_to_sentence(
-    c(
-      "Article 123 paragraph 2",
-      "Article 123 paragraph 2 in connection with Article 19",
-      "Article 130 paragraph 2",
-      "Article 131 paragraph 2",
-      "Article 139 paragraph 2",
-      "Article 144 paragraph 2",
-      "Article 140 paragraph 2",
-      "Article 189 paragraph 2",
-      "Article 191 paragraph 3"
-    )
-  )
-
-  data.frame(mk, sq, en)
-}
-
-#' @noRd
-offense_translation_table <- function(lang) {
-  mk <-
-    stringr::str_to_sentence(
-      c(
-        "Убиство",
-        "Телесна повреда",
-        "Тешка телесна повреда",
-        "Присилба",
-        "Загрозување на сигурноста",
-        "Противправно лишување од слобода",
-        "Обљуба со злоупотреба на положба",
-        "Посредување во вршење проституција"
-      )
-    )
-
-  sq <- stringr::str_to_sentence(
-    c(
-      "Vrasje",
-      "lëndim trupor",
-      "Lëndim i rëndë trupor",
-      "Detyrim",
-      "Kërcënimi i sigurisë",
-      "Heqja e paligjshme e lirisë",
-      "Dashuri nga shpërdorimi i pozitës",
-      "Ndërmjetësimi i prostitucionit"
-    )
-  )
-
-  en <- stringr::str_to_sentence(
-    c(
-      "Murder",
-      "bodily injury",
-      "Grievous bodily harm",
-      "Compulsion",
-      "Security threat",
-      "Unlawful deprivation of liberty",
-      "Love by abuse of position",
-      "Mediating prostitution"
-    )
-  )
-
-  data.frame(mk, sq, en)
-}
-
-#' @noRd
-colnames_translation_table <- function(lang) {
-  mk <- stringr::str_to_sentence(c(
-    "Член од кривичен законик",
-    "Законска инкриминација",
-    "Сектор",
-    "Број"
-  ))
-
-  sq <- stringr::str_to_sentence(c("Neni i Kodit Penal",
-                                   "Inkriminimi ligjor",
-                                   "Sektor",
-                                   "Numri"))
-
-  en <- stringr::str_to_sentence(c(
-    "Criminal Code Article",
-    "Legal Incrimination",
-    "Sector",
-    "Number"
-  ))
-
-  data.frame(mk, sq, en)
-}
