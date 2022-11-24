@@ -106,9 +106,56 @@ get_victims_by_sector <- function(path, lang) {
     dplyr::mutate(Група = bulk_translate_from_mk(vec = Група, tab = "group", lang = lang))
 
   new_col_names <- bulk_translate_from_mk(vec = colnames(Y), tab = "colnames", lang = lang)
-
   names(Y) <- new_col_names
 
   return(Y)
 }
+
+#' Wrangle `Прекршоци по СВР`
+#'
+#' @details This is the third sheet in the quarterly report in excel file
+#' published by the Macedonian Ministry of Internal Affairs
+#'
+#' @param path path (local or url) to the excel file
+#' @param lang A 2-letter language code, "mk", "sq", or "en"
+#'
+#' @examples
+#' path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
+#' get_violations_by_sector(path = path, lang = "sq")
+#' get_violations_by_sector(path = path, lang = "mk")
+#' get_violations_by_sector(path = path, lang = "en")
+#'
+#' @export
+#'
+get_violations_by_sector <- function(path, lang) {
+  X <- readxl::read_excel(path = path,
+                          sheet = 3,
+                          range = "A2:AB8")
+
+  colnames(X)[1:2] <- c("Член од прекршочен законик", "Прекршок")
+
+  Y <- X %>%
+    tidyr::pivot_longer(cols = -(1:2),
+                        names_to = "Сектор",
+                        values_to = "Број") %>%
+    dplyr::mutate(Сектор = stringr::str_to_sentence(stringr::str_remove(Сектор, "СВР "))) %>%
+    dplyr::mutate(`Член од прекршочен законик` = stringr::str_to_sentence(`Член од прекршочен законик`)) %>%
+    dplyr::mutate(`Прекршок` = stringr::str_to_sentence(`Прекршок`)) %>%
+    dplyr::mutate(Сектор = bulk_translate_from_mk(vec = Сектор, tab = "sector", lang = lang)) %>%
+    dplyr::mutate(`Член од прекршочен законик` = bulk_translate_from_mk(
+      vec = `Член од прекршочен законик`,
+      tab = "violation_article",
+      lang = lang)) %>%
+    dplyr::mutate(`Прекршок` = bulk_translate_from_mk(
+      vec = `Прекршок`,
+      tab = "violation",
+      lang = lang))
+
+    new_col_names <- bulk_translate_from_mk(vec = colnames(Y), tab = "colnames", lang = lang)
+    names(Y) <- new_col_names
+
+    return(Y)
+
+}
+
 

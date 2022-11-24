@@ -7,7 +7,9 @@ colnames_translation_table <- function() {
     "Сектор",
     "Број",
     "Тип",
-    "Група"
+    "Група",
+    "Член од прекршочен законик",
+    "Прекршок"
   ))
 
   sq <- stringr::str_to_sentence(c("Neni i Kodit Penal",
@@ -15,7 +17,9 @@ colnames_translation_table <- function() {
                                    "Sektor",
                                    "Numri",
                                    "Lloji",
-                                   "Grupi"))
+                                   "Grupi",
+                                   "Neni i Kodit të Kundërvajtjes",
+                                   "Fyerje"))
 
   en <- stringr::str_to_sentence(c(
     "Criminal Code Article",
@@ -23,7 +27,9 @@ colnames_translation_table <- function() {
     "Sector",
     "Number",
     "Type",
-    "Group"
+    "Group",
+    "Misdemeanor Code Article ",
+    "Violation"
   ))
 
   data.frame(mk, sq, en)
@@ -238,6 +244,81 @@ group_tt <- group_translation_table()
 
 
 
+
+violation_translation_table <- function() {
+
+  mk <- stringr::str_to_sentence(
+    c(
+      "Малтретирање на друг во стан",
+      "Физички напад",
+      "Учество во тепачка",
+      "Карање и викање на јавно место",
+      "Оддавање на пијанство на јавно место"
+    )
+  )
+
+  sq <- stringr::str_to_sentence(
+    c(
+      "Ngacmimi i një tjetri në një apartament",
+      "Sulm fizik",
+      "Pjesëmarrja në një luftë",
+      "Qortimi dhe bërtitja në një vend publik",
+      "Të kënaqesh me dehjen në një vend publik"
+    )
+  )
+
+  en <- stringr::str_to_sentence(
+    c(
+      "Harassment of another in an apartment",
+      "Physical Assault",
+      "Participation in a fight",
+      "Scolding and shouting in a public place",
+      "Indulging in drunkenness in a public place"
+    )
+  )
+
+  data.frame(mk, sq, en)
+}
+
+violation_tt <- violation_translation_table()
+
+violation_article_translation_table <- function() {
+  mk <- stringr::str_to_sentence(c(
+    "член 7",
+    "член 12",
+    "член 11",
+    "член 4",
+    "член 6",
+    "Останати прекршоци"
+  ))
+
+  sq <- stringr::str_to_sentence(c(
+    "Neni 7",
+    "Neni 12",
+    "Neni 11",
+    "Neni 4",
+    "Neni 6",
+    "Shkëlqime të tjera"
+  ))
+
+  en <- stringr::str_to_sentence(c(
+    "Article 7",
+    "Article 12",
+    "Article 11",
+    "Article 4",
+    "Article 6",
+    "Other violations"
+  ))
+
+  data.frame(mk, sq, en)
+}
+
+violation_article_tt <- violation_article_translation_table()
+
+
+
+##### --- Collate the data --- #####
+
 paths <-
   c(
     "data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx",
@@ -257,6 +338,12 @@ victims_mk <- purrr::map_dfr(paths, get_victims_by_sector, lang = "mk", .id = "�
 victims_en <- purrr::map_dfr(paths, get_victims_by_sector, lang = "en", .id = "Quarter")
 victims_sq <- purrr::map_dfr(paths, get_victims_by_sector, lang = "sq", .id = "Tremujori")
 
+###### --- Translations of the second sheet --- #####
+
+violations_mk <- purrr::map_dfr(paths, get_violations_by_sector, lang = "mk", .id = "Квартал")
+violations_en <- purrr::map_dfr(paths, get_violations_by_sector, lang = "en", .id = "Quarter")
+violations_sq <- purrr::map_dfr(paths, get_violations_by_sector, lang = "sq", .id = "Tremujori")
+
 ##### --- Use it! --- #####
 
 usethis::use_data(
@@ -266,6 +353,8 @@ usethis::use_data(
   colnames_tt,
   type_tt,
   group_tt,
+  violation_tt,
+  violation_article_tt,
 
   crimes_mk,
   crimes_en,
@@ -274,6 +363,10 @@ usethis::use_data(
   victims_mk,
   victims_en,
   victims_sq,
+
+  violations_mk,
+  violations_en,
+  violations_sq,
 
   overwrite = TRUE,
   internal = TRUE
