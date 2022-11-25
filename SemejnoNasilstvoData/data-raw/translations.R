@@ -9,7 +9,8 @@ colnames_translation_table <- function() {
     "Тип",
     "Група",
     "Член од прекршочен законик",
-    "Прекршок"
+    "Прекршок",
+    "Поплака"
   ))
 
   sq <- stringr::str_to_sentence(c("Neni i Kodit Penal",
@@ -19,7 +20,7 @@ colnames_translation_table <- function() {
                                    "Lloji",
                                    "Grupi",
                                    "Neni i Kodit të Kundërvajtjes",
-                                   "Fyerje"))
+                                   "Fyerje", "Ankesa"))
 
   en <- stringr::str_to_sentence(c(
     "Criminal Code Article",
@@ -29,7 +30,8 @@ colnames_translation_table <- function() {
     "Type",
     "Group",
     "Misdemeanor Code Article ",
-    "Violation"
+    "Violation",
+    "Complaint"
   ))
 
   data.frame(mk, sq, en)
@@ -242,9 +244,6 @@ group_translation_table <- function() {
 
 group_tt <- group_translation_table()
 
-
-
-
 violation_translation_table <- function() {
 
   mk <- stringr::str_to_sentence(
@@ -315,7 +314,79 @@ violation_article_translation_table <- function() {
 
 violation_article_tt <- violation_article_translation_table()
 
+complaint_translation_table <- function() {
 
+  mk <- stringr::str_to_sentence(c("Вкупен број на поплаки од јануари до март 2022 година",
+          "Физичко малтретирање", "Психичко малтретирање",
+          "Економско малтретирање", "Вкупен број на сторители",
+          "Сторители - мажи", "Сторители - жени",
+          "Сторителот бил под дејство на алкохол",
+          "Сторителот бил под дејство на дрога",
+          "Сторителот бил под дејство на растројство",
+          "Вкупен број на жртви", "Жртви - мажи",
+          "Жртви - жени", "Жртвата е сопруга на сторителот",
+          "Жртвата е сопруг на сторителот", "Жртвата е дете на сторителот",
+          "Жртвата е родител на сторителот",
+          "Жртвата е поранешен брачен другар на сторителот",
+          "Жртвата е лице во вонбрачна заедница со сторителот",
+          "Жртви - останати (мажи и жени)"))
+
+  sq <-
+    stringr::str_to_sentence(
+      c(
+        "Numri total i ankesave nga janari deri në mars 2022",
+        "Abuzim fizik",
+        "Abuzim mendor",
+        "Ngacmim ekonomik",
+        "Numri total i autorëve",
+        "Autorët - meshkuj",
+        "Autorët - femra",
+        "Autori ka qenë nën efektin e alkoolit",
+        "Autori ka qenë nën efektin e drogës",
+        "Autori ka qenë nën ndikimin e çrregullimit",
+        "Numri i përgjithshëm i viktimave",
+        "Viktimat - burra",
+        "Viktimat – femra",
+        "Viktima është gruaja e autorit",
+        "Viktima është bashkëshorti i autorit",
+        "Viktima është fëmija i autorit",
+        "Viktima është prindi i autorit",
+        "Viktima është ish - bashkëshortja e autorit",
+        "Viktima është person në bashkësi jashtëmartesore me autorin",
+        "Viktimat - Të tjera (Mashkull dhe Femra)"
+      )
+    )
+
+  en <-
+    stringr::str_to_sentence(
+      c(
+        "Total number of complaints from January to March 2022",
+        "Physical abuse",
+        "Mental abuse",
+        "Economic harassment",
+        "Total number of perpetrators",
+        "Perpetrators - men",
+        "Perpetrators - women",
+        "The perpetrator was under the influence of alcohol",
+        "The perpetrator was under the influence of drugs",
+        "The perpetrator was under the influence of a disorder",
+        "Total number of victims",
+        "Victims - men",
+        "Victims - women",
+        "The victim is the perpetrator's wife",
+        "The victim is the perpetrator's husband",
+        "The victim is the perpetrator's child",
+        "The victim is the parent of the perpetrator",
+        "The victim is the ex-spouse of the perpetrator",
+        "The victim is a person in an extramarital union with the perpetrator",
+        "Victims - Other (Male and Female)"
+      )
+    )
+
+  data.frame(mk, sq, en)
+}
+
+complaint_tt <- complaint_translation_table()
 
 ##### --- Collate the data --- #####
 
@@ -338,11 +409,17 @@ victims_mk <- purrr::map_dfr(paths, get_victims_by_sector, lang = "mk", .id = "�
 victims_en <- purrr::map_dfr(paths, get_victims_by_sector, lang = "en", .id = "Quarter")
 victims_sq <- purrr::map_dfr(paths, get_victims_by_sector, lang = "sq", .id = "Tremujori")
 
-###### --- Translations of the second sheet --- #####
+###### --- Translations of the third sheet --- #####
 
 violations_mk <- purrr::map_dfr(paths, get_violations_by_sector, lang = "mk", .id = "Квартал")
 violations_en <- purrr::map_dfr(paths, get_violations_by_sector, lang = "en", .id = "Quarter")
 violations_sq <- purrr::map_dfr(paths, get_violations_by_sector, lang = "sq", .id = "Tremujori")
+
+###### --- Translations of the fourth sheet --- #####
+
+complaints_mk <- purrr::map_dfr(paths, get_complaints_by_sector, lang = "mk", .id = "Квартал")
+complaints_en <- purrr::map_dfr(paths, get_complaints_by_sector, lang = "en", .id = "Quarter")
+complaints_sq <- purrr::map_dfr(paths, get_complaints_by_sector, lang = "sq", .id = "Tremujori")
 
 ##### --- Use it! --- #####
 
@@ -355,6 +432,7 @@ usethis::use_data(
   group_tt,
   violation_tt,
   violation_article_tt,
+  complaint_tt,
 
   crimes_mk,
   crimes_en,
@@ -367,6 +445,10 @@ usethis::use_data(
   violations_mk,
   violations_en,
   violations_sq,
+
+  complaints_mk,
+  complaints_en,
+  complaints_sq,
 
   overwrite = TRUE,
   internal = TRUE

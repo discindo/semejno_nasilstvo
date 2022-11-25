@@ -158,4 +158,42 @@ get_violations_by_sector <- function(path, lang) {
 
 }
 
+#' Wrangle `Поплаки по СВР`
+#'
+#' @details This is the fourth sheet in the quarterly report in excel file
+#' published by the Macedonian Ministry of Internal Affairs
+#'
+#' @param path path (local or url) to the excel file
+#' @param lang A 2-letter language code, "mk", "sq", or "en"
+#'
+#' @examples
+#' path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
+#' get_complaints_by_sector(path = path, lang = "sq")
+#' get_complaints_by_sector(path = path, lang = "mk")
+#' get_complaints_by_sector(path = path, lang = "en")
+#'
+#' @export
+#'
+get_complaints_by_sector <- function(path, lang) {
+  X <- readxl::read_excel(path = path,
+                          sheet = 4,
+                          range = "A2:U10")
+
+  colnames(X)[[1]] <- "Сектор"
+
+  Y <- X %>%
+    tidyr::pivot_longer(cols = -1,
+                        names_to = "Поплака",
+                        values_to = "Број") %>%
+    dplyr::mutate(Сектор = stringr::str_to_sentence(stringr::str_remove(Сектор, "СВР "))) %>%
+    dplyr::mutate(`Поплака` = stringr::str_to_sentence(`Поплака`)) %>%
+    dplyr::mutate(Сектор = bulk_translate_from_mk(vec = Сектор, tab = "sector", lang = lang)) %>%
+    dplyr::mutate(Поплака = bulk_translate_from_mk(vec = Поплака, tab = "complaint", lang = lang))
+
+  new_col_names <- bulk_translate_from_mk(vec = colnames(Y), tab = "colnames", lang = lang)
+  names(Y) <- new_col_names
+
+  return(Y)
+
+}
 
