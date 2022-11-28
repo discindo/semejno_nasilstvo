@@ -57,7 +57,7 @@ app_server <- function(input, output, session) {
         shiny::br()
       ),
       bslib::nav(
-        tab5,
+        tab6,
         shiny::br(),
         shiny::br()
       )
