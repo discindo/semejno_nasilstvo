@@ -3,6 +3,6 @@
 export("%>%")
 export(get_complaints_by_sector)
 export(get_crime_by_sector)
+export(get_misdemeanors_by_sector)
 export(get_victims_by_sector)
-export(get_violations_by_sector)
 importFrom(magrittr,"%>%")

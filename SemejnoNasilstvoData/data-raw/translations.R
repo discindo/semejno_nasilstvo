@@ -10,6 +10,7 @@ colnames_translation_table <- function() {
     "Група",
     "Член од прекршочен законик",
     "Прекршок",
+    "Категорија",
     "Поплака"
   ))
 
@@ -20,7 +21,9 @@ colnames_translation_table <- function() {
                                    "Lloji",
                                    "Grupi",
                                    "Neni i Kodit të Kundërvajtjes",
-                                   "Fyerje", "Ankesa"))
+                                   "Fyerje",
+                                   "Kategori",
+                                   "Ankesa"))
 
   en <- stringr::str_to_sentence(c(
     "Criminal Code Article",
@@ -30,7 +33,8 @@ colnames_translation_table <- function() {
     "Type",
     "Group",
     "Misdemeanor Code Article ",
-    "Violation",
+    "Misdemeanor",
+    "Category",
     "Complaint"
   ))
 
@@ -244,7 +248,7 @@ group_translation_table <- function() {
 
 group_tt <- group_translation_table()
 
-violation_translation_table <- function() {
+misdemeanor_translation_table <- function() {
 
   mk <- stringr::str_to_sentence(
     c(
@@ -279,9 +283,9 @@ violation_translation_table <- function() {
   data.frame(mk, sq, en)
 }
 
-violation_tt <- violation_translation_table()
+misdemeanor_tt <- misdemeanor_translation_table()
 
-violation_article_translation_table <- function() {
+misdemeanor_article_translation_table <- function() {
   mk <- stringr::str_to_sentence(c(
     "член 7",
     "член 12",
@@ -306,13 +310,75 @@ violation_article_translation_table <- function() {
     "Article 11",
     "Article 4",
     "Article 6",
-    "Other violations"
+    "Other misdemeanos"
   ))
 
   data.frame(mk, sq, en)
 }
 
-violation_article_tt <- violation_article_translation_table()
+misdemeanor_article_tt <- misdemeanor_article_translation_table()
+
+violation_category_translation_table <- function() {
+  mk <- stringr::str_to_sentence(
+    c("Вкупен број на прекршоци во врска со семејно насилство од јануари до март 2022 година",
+      "Скопје", "Битола", "Велес", "Куманово",
+      "Охрид", "Струмица", "Тетово", "Штип",
+      "Сторители", "Сторители - мажи", "Сторители - жени",
+      "Жртви", "Жртви - мажи", "Жртви - жени",
+      "Жртвата е сопруга на сторителот",
+      "Жртвата е сопруг на сторителот", "Жртвата е дете на сторителот",
+      "Жртвата е родител на сторителот",
+      "Жртвата е поранешен брачен другар на сторителот",
+      "Жртвата е лице во вонбрачна заедница со сторителот",
+      "Жртви - останати (мажи и жени)", "Прекршокот  е извршен со огнено оружје",
+      "Прекршокот  е извршен со ладно оружје",
+      "Прекршокот  е извршен со физичка сила",
+      "Останати начини на извршување на прекршокот"
+    )
+  )
+
+  sq <- stringr::str_to_sentence(
+    c("Numri i përgjithshëm i veprave penale të dhunës në familje nga janari deri në mars 2022",
+      "Shkup", "Manastir", "Veles", "Kumanovë",
+      "Ohri", "Strumicë", "Tetova", "Shtip",
+      "Autorët", "Autorët - Mashkull", "Autorët - Femër",
+      "Viktimat", "Viktimat - Mashkull", "Viktimat - Femra",
+      "Viktima është gruaja e autorit",
+      "Viktima është bashkëshorti i autorit",
+      "Viktima është fëmija i autorit",
+      "Viktima është prindi i autorit",
+      "Viktima është ish-bashkëshortja e autorit",
+      "Viktima është person në bashkësi jashtëmartesore me autorin",
+      "Viktimat - të tjerë (burra dhe gra)", "Vepra penale është kryer me armë zjarri",
+      "Veprimi është kryer me armë të ftohtë",
+      "Veprimi është kryer me forcë fizike",
+      "Mënyra të tjera të kryerjes së veprës penale"
+    )
+  )
+
+  en <- stringr::str_to_sentence(
+    c("Total number of domestic violence offenses from January to March 2022",
+      "Skopje", "Bitola", "Veles", "Kumanovo",
+      "Ohrid", "Strumica", "Tetovo", "Stip",
+      "Perpetrators", "Perpetrators - Male", "Perpetrators - Female",
+      "Victims", "Victims - Male", "Victims - Female",
+      "The victim is the perpetrator's wife",
+      "The victim is the perpetrator's husband",
+      "The victim is the perpetrator's child",
+      "The victim is the parent of the perpetrator",
+      "The victim is the ex-spouse of the perpetrator",
+      "The victim is a person in an extramarital union with the perpetrator",
+      "Victims - others (men and women)", "The offense was committed with a firearm",
+      "The offense was committed with a cold weapon",
+      "The offense was committed with physical force",
+      "Other ways of committing the offense"
+    )
+  )
+
+  data.frame(mk, sq, en)
+}
+
+violation_category_tt <- violation_category_translation_table()
 
 complaint_translation_table <- function() {
 
@@ -411,9 +477,9 @@ victims_sq <- purrr::map_dfr(paths, get_victims_by_sector, lang = "sq", .id = "T
 
 ###### --- Translations of the third sheet --- #####
 
-violations_mk <- purrr::map_dfr(paths, get_violations_by_sector, lang = "mk", .id = "Квартал")
-violations_en <- purrr::map_dfr(paths, get_violations_by_sector, lang = "en", .id = "Quarter")
-violations_sq <- purrr::map_dfr(paths, get_violations_by_sector, lang = "sq", .id = "Tremujori")
+misdemeanors_mk <- purrr::map_dfr(paths, get_misdemeanors_by_sector, lang = "mk", .id = "Квартал")
+misdemeanors_en <- purrr::map_dfr(paths, get_misdemeanors_by_sector, lang = "en", .id = "Quarter")
+misdemeanors_sq <- purrr::map_dfr(paths, get_misdemeanors_by_sector, lang = "sq", .id = "Tremujori")
 
 ###### --- Translations of the fourth sheet --- #####
 
@@ -428,10 +494,15 @@ usethis::use_data(
   article_tt,
   offense_tt,
   colnames_tt,
+
   type_tt,
   group_tt,
+  misdemeanor_tt,
+  misdemeanor_article_tt,
   violation_tt,
   violation_article_tt,
+  violation_category_tt,
+
   complaint_tt,
 
   crimes_mk,
@@ -442,9 +513,9 @@ usethis::use_data(
   victims_en,
   victims_sq,
 
-  violations_mk,
-  violations_en,
-  violations_sq,
+  misdemeanors_mk,
+  misdemeanors_en,
+  misdemeanors_sq,
 
   complaints_mk,
   complaints_en,
@@ -453,9 +524,4 @@ usethis::use_data(
   overwrite = TRUE,
   internal = TRUE
 )
-
-
-
-
-
 
