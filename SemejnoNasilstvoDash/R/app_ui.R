@@ -13,7 +13,7 @@ app_ui <- function(request) {
         theme = bslib::bs_theme(version = 5, bootswatch = "lux"),
         shiny::div(
           class = "text-center",
-          shiny::h1("Семејно Насилство"),
+          shiny::uiOutput("page_title"),
           shiny::br(),
           shiny::div(
             class = "d-flex justify-content-end",
@@ -28,42 +28,8 @@ app_ui <- function(request) {
           shiny::br(),
           shiny::div(
             class = "container-xl",
-            bslib::navs_pill_card(
-              bslib::nav(
-                "Криминални случаи",
-                shiny::br(),
-                shiny::br(),
-                DT::DTOutput("crime_table")
-              ),
-              bslib::nav(
-                "Сторители и жртви",
-                shiny::br(),
-                shiny::br(),
-                DT::DTOutput("victims_table")
-              ),
-              bslib::nav(
-                "Прекршоци",
-                shiny::br(),
-                shiny::br(),
-                DT::DTOutput("misdemeanors_table")
-              ),
-              bslib::nav(
-                "Поплаки",
-                shiny::br(),
-                shiny::br(),
-                DT::DTOutput("complaints_table")
-              ),
-              bslib::nav(
-                "За податоците",
-                shiny::br(),
-                shiny::br()
-              ),
-              bslib::nav(
-                "За Discindo",
-                shiny::br(),
-                shiny::br()
-              )
-            )
+            shiny::uiOutput("nav_panel")
+
           )
         )
       )
