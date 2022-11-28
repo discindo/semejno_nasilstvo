@@ -13,6 +13,7 @@ Imports:
     config,
     DT (>= 0.25),
     golem,
+    pkgload,
     SemejnoNasilstvoData (>= 0.1.0),
     shiny
 Encoding: UTF-8
