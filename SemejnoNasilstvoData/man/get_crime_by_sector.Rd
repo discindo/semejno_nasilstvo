@@ -19,9 +19,11 @@ This is the first sheet in the quarterly report in excel file
 published by the Macedonian Ministry of Internal Affairs
 }
 \examples{
-path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
-get_crime_by_sector(path = path, lang = "sq")
-get_crime_by_sector(path = path, lang = "mk")
-get_crime_by_sector(path = path, lang = "en")
+\dontrun{
+  path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
+  get_crime_by_sector(path = path, lang = "sq")
+  get_crime_by_sector(path = path, lang = "mk")
+  get_crime_by_sector(path = path, lang = "en")
+}
 
 }

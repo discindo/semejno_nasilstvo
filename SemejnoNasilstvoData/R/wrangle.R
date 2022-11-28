@@ -42,10 +42,12 @@ bulk_translate_from_mk <- function(vec, tab, lang) {
 #' @param lang A 2-letter language code, "mk", "sq", or "en"
 #'
 #' @examples
-#' path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
-#' get_crime_by_sector(path = path, lang = "sq")
-#' get_crime_by_sector(path = path, lang = "mk")
-#' get_crime_by_sector(path = path, lang = "en")
+#' \dontrun{
+#'   path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
+#'   get_crime_by_sector(path = path, lang = "sq")
+#'   get_crime_by_sector(path = path, lang = "mk")
+#'   get_crime_by_sector(path = path, lang = "en")
+#' }
 #'
 #' @export
 get_crime_by_sector <- function(path, lang) {
@@ -81,10 +83,12 @@ get_crime_by_sector <- function(path, lang) {
 #' @param lang A 2-letter language code, "mk", "sq", or "en"
 #'
 #' @examples
-#' path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
-#' get_victims_by_sector(path = path, lang = "sq")
-#' get_victims_by_sector(path = path, lang = "mk")
-#' get_victims_by_sector(path = path, lang = "en")
+#' \dontrun{
+#'   path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
+#'   get_victims_by_sector(path = path, lang = "sq")
+#'   get_victims_by_sector(path = path, lang = "mk")
+#'   get_victims_by_sector(path = path, lang = "en")
+#' }
 #'
 #' @export
 get_victims_by_sector <- function(path, lang) {
@@ -120,10 +124,12 @@ get_victims_by_sector <- function(path, lang) {
 #' @param lang A 2-letter language code, "mk", "sq", or "en"
 #'
 #' @examples
-#' path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
-#' get_misdemeanors_by_sector(path = path, lang = "sq")
-#' get_misdemeanors_by_sector(path = path, lang = "mk")
-#' get_misdemeanors_by_sector(path = path, lang = "en")
+#' \dontrun{
+#'   path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
+#'   get_misdemeanors_by_sector(path = path, lang = "sq")
+#'   get_misdemeanors_by_sector(path = path, lang = "mk")
+#'   get_misdemeanors_by_sector(path = path, lang = "en")
+#' }
 #'
 #' @export
 #'
@@ -136,12 +142,12 @@ get_misdemeanors_by_sector <- function(path, lang) {
 
   Y <- X %>%
     tidyr::pivot_longer(cols = -(1:2),
-                        names_to = "Сектор",
+                        names_to = "Категорија",
                         values_to = "Број") %>%
-    dplyr::mutate(Сектор = stringr::str_to_sentence(stringr::str_remove(Сектор, "СВР "))) %>%
+    dplyr::mutate(Категорија = stringr::str_to_sentence(stringr::str_remove(Категорија, "СВР "))) %>%
     dplyr::mutate(`Член од прекршочен законик` = stringr::str_to_sentence(`Член од прекршочен законик`)) %>%
     dplyr::mutate(`Прекршок` = stringr::str_to_sentence(`Прекршок`)) %>%
-    dplyr::mutate(Сектор = bulk_translate_from_mk(vec = Сектор, tab = "sector", lang = lang)) %>%
+    dplyr::mutate(Категорија = bulk_translate_from_mk(vec = Категорија, tab = "violation_category", lang = lang)) %>%
     dplyr::mutate(`Член од прекршочен законик` = bulk_translate_from_mk(
       vec = `Член од прекршочен законик`,
       tab = "misdemeanor_article",
@@ -155,7 +161,6 @@ get_misdemeanors_by_sector <- function(path, lang) {
     names(Y) <- new_col_names
 
     return(Y)
-
 }
 
 #' Wrangle `Поплаки по СВР`
@@ -167,10 +172,12 @@ get_misdemeanors_by_sector <- function(path, lang) {
 #' @param lang A 2-letter language code, "mk", "sq", or "en"
 #'
 #' @examples
+#' \dontrun{
 #' path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
-#' get_complaints_by_sector(path = path, lang = "sq")
-#' get_complaints_by_sector(path = path, lang = "mk")
-#' get_complaints_by_sector(path = path, lang = "en")
+#'   get_complaints_by_sector(path = path, lang = "sq")
+#'   get_complaints_by_sector(path = path, lang = "mk")
+#'   get_complaints_by_sector(path = path, lang = "en")
+#' }
 #'
 #' @export
 #'

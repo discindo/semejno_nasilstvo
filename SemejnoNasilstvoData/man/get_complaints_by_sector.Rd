@@ -19,9 +19,11 @@ This is the fourth sheet in the quarterly report in excel file
 published by the Macedonian Ministry of Internal Affairs
 }
 \examples{
+\dontrun{
 path <- "../data-raw/semejno-za-open-data-od-januari-do-mart-2022.xlsx"
-get_complaints_by_sector(path = path, lang = "sq")
-get_complaints_by_sector(path = path, lang = "mk")
-get_complaints_by_sector(path = path, lang = "en")
+  get_complaints_by_sector(path = path, lang = "sq")
+  get_complaints_by_sector(path = path, lang = "mk")
+  get_complaints_by_sector(path = path, lang = "en")
+}
 
 }
