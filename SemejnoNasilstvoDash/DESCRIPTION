@@ -9,8 +9,11 @@ Authors@R:
 Description: What the package does (one paragraph).
 License: What license is it under?
 Imports: 
+    bslib (>= 0.4.0),
     config,
+    DT (>= 0.25),
     golem,
+    SemejnoNasilstvoData (>= 0.1.0),
     shiny
 Encoding: UTF-8
 LazyData: true
