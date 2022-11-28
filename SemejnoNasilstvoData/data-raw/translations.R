@@ -33,7 +33,7 @@ colnames_translation_table <- function() {
     "Type",
     "Group",
     "Misdemeanor Code Article ",
-    "Violation",
+    "Misdemeanor",
     "Category",
     "Complaint"
   ))
@@ -248,7 +248,7 @@ group_translation_table <- function() {
 
 group_tt <- group_translation_table()
 
-violation_translation_table <- function() {
+misdemeanor_translation_table <- function() {
 
   mk <- stringr::str_to_sentence(
     c(
@@ -283,9 +283,9 @@ violation_translation_table <- function() {
   data.frame(mk, sq, en)
 }
 
-violation_tt <- violation_translation_table()
+misdemeanor_tt <- misdemeanor_translation_table()
 
-violation_article_translation_table <- function() {
+misdemeanor_article_translation_table <- function() {
   mk <- stringr::str_to_sentence(c(
     "член 7",
     "член 12",
@@ -310,13 +310,13 @@ violation_article_translation_table <- function() {
     "Article 11",
     "Article 4",
     "Article 6",
-    "Other violations"
+    "Other misdemeanos"
   ))
 
   data.frame(mk, sq, en)
 }
 
-violation_article_tt <- violation_article_translation_table()
+misdemeanor_article_tt <- misdemeanor_article_translation_table()
 
 violation_category_translation_table <- function() {
   mk <- stringr::str_to_sentence(
@@ -477,9 +477,9 @@ victims_sq <- purrr::map_dfr(paths, get_victims_by_sector, lang = "sq", .id = "T
 
 ###### --- Translations of the third sheet --- #####
 
-violations_mk <- purrr::map_dfr(paths, get_violations_by_sector, lang = "mk", .id = "Квартал")
-violations_en <- purrr::map_dfr(paths, get_violations_by_sector, lang = "en", .id = "Quarter")
-violations_sq <- purrr::map_dfr(paths, get_violations_by_sector, lang = "sq", .id = "Tremujori")
+misdemeanors_mk <- purrr::map_dfr(paths, get_misdemeanors_by_sector, lang = "mk", .id = "Квартал")
+misdemeanors_en <- purrr::map_dfr(paths, get_misdemeanors_by_sector, lang = "en", .id = "Quarter")
+misdemeanors_sq <- purrr::map_dfr(paths, get_misdemeanors_by_sector, lang = "sq", .id = "Tremujori")
 
 ###### --- Translations of the fourth sheet --- #####
 
@@ -497,7 +497,8 @@ usethis::use_data(
 
   type_tt,
   group_tt,
-
+  misdemeanor_tt,
+  misdemeanor_article_tt,
   violation_tt,
   violation_article_tt,
   violation_category_tt,
@@ -512,9 +513,9 @@ usethis::use_data(
   victims_en,
   victims_sq,
 
-  violations_mk,
-  violations_en,
-  violations_sq,
+  misdemeanors_mk,
+  misdemeanors_en,
+  misdemeanors_sq,
 
   complaints_mk,
   complaints_en,
