@@ -15,6 +15,16 @@ app_ui <- function(request) {
           class = "text-center",
           shiny::h1("Семејно Насилство"),
           shiny::br(),
+          shiny::div(
+            class = "d-flex justify-content-end",
+            shiny::radioButtons(
+              inputId = "lang",
+              label = NULL,
+              choices = c("mk", "sq", "en"),
+              selected = "mk",
+              inline = TRUE
+            )
+          ),
           shiny::br(),
           shiny::div(
             class = "container-xl",
@@ -45,6 +55,11 @@ app_ui <- function(request) {
               ),
               bslib::nav(
                 "За податоците",
+                shiny::br(),
+                shiny::br()
+              ),
+              bslib::nav(
+                "За Discindo",
                 shiny::br(),
                 shiny::br()
               )

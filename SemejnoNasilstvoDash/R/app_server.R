@@ -5,21 +5,37 @@
 #' @import shiny
 #' @noRd
 app_server <- function(input, output, session) {
+  output$crime_table <-
+    DT::renderDT(rownames = FALSE,
+                 server = TRUE,
+                 filter = "top",
+                 {
+                   getFromNamespace(ns = "SemejnoNasilstvoData", x = sprintf("crimes_%s", input$lang))
+                 })
 
-  output$crime_table <- DT::renderDT(rownames = FALSE, server = TRUE, filter = "top", {
-    SemejnoNasilstvoData:::crimes_mk
-  })
+  output$victims_table <-
+    DT::renderDT(rownames = FALSE,
+                 server = TRUE,
+                 filter = "top",
+                 {
+                   getFromNamespace(ns = "SemejnoNasilstvoData", x = sprintf("victims_%s", input$lang))
+                 })
 
-  output$victims_table <- DT::renderDT(rownames = FALSE, server = TRUE, filter = "top", {
-    SemejnoNasilstvoData:::victims_mk
-  })
+  output$misdemeanors_table <-
+    DT::renderDT(rownames = FALSE,
+                 server = TRUE,
+                 filter = "top",
+                 {
+                   getFromNamespace(ns = "SemejnoNasilstvoData",
+                                    x = sprintf("misdemeanors_%s", input$lang))
+                 })
 
-  output$misdemeanors_table <- DT::renderDT(rownames = FALSE, server = TRUE, filter = "top", {
-    SemejnoNasilstvoData:::misdemeanors_mk
-  })
-
-  output$complaints_table <- DT::renderDT(rownames = FALSE, server = TRUE, filter = "top", {
-    SemejnoNasilstvoData:::complaints_mk
-  })
+  output$complaints_table <-
+    DT::renderDT(rownames = FALSE,
+                 server = TRUE,
+                 filter = "top",
+                 {
+                   getFromNamespace(ns = "SemejnoNasilstvoData", x = sprintf("complaints_%s", input$lang))
+                 })
 
 }
